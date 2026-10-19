@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101114">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bass Practice">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Bass Practice</title>
+<style>
+:root{
+  --bg:#0e0f12;--card:#181a1f;--card2:#22252b;--text:#f6f7f8;
+  --muted:#9da2aa;--accent:#c7ef43;--line:#30343d;--red:#ff7474;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR",sans-serif;
+  -webkit-text-size-adjust:100%;
+}
+body{padding-bottom:env(safe-area-inset-bottom)}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.app{
+  width:100%;max-width:760px;margin:auto;
+  padding:calc(16px + env(safe-area-inset-top)) 14px 40px;
+}
+header{margin-bottom:14px}
+.brand{font-weight:900;font-size:25px;letter-spacing:1.4px;padding:4px 4px 7px}
+.brand b{color:var(--accent)}
+nav{
+  display:flex;gap:6px;overflow-x:auto;overscroll-behavior-x:contain;
+  padding:4px 0 9px;scrollbar-width:none;
+}
+nav::-webkit-scrollbar{display:none}
+nav button{
+  flex:0 0 auto;background:transparent;color:var(--muted);
+  border:0;border-radius:13px;padding:11px 14px;min-height:42px;
+}
+nav button.active{background:var(--card2);color:var(--text)}
+.page{display:none}
+.page.active{display:block}
+h2{font-size:27px;line-height:1.2;margin:22px 2px 8px}
+.hero{
+  background:linear-gradient(135deg,#20251b,#17191d);
+  border:1px solid var(--line);border-radius:20px;
+  padding:21px;margin-bottom:13px;
+}
+.hero h1{font-size:26px;line-height:1.25;margin:0 0 7px}
+.muted{color:var(--muted);font-size:14px;line-height:1.5}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.card{
+  background:var(--card);border:1px solid var(--line);
+  border-radius:16px;padding:16px;
+}
+.stat{font-size:22px;font-weight:900;margin-top:5px}
+.title{font-size:19px;font-weight:800;margin:22px 2px 10px}
+
+label{
+  display:block;color:var(--muted);font-size:13px;
+  line-height:1.3;margin:0 0 15px;
+}
+input,select,textarea{
+  display:block;width:100%;max-width:100%;min-width:0;
+  box-sizing:border-box;margin-top:7px;
+  background:#101216;color:var(--text);
+  border:1px solid var(--line);border-radius:13px;
+  padding:13px 14px;outline:none;
+  font-size:16px;line-height:1.35;
+}
+input{height:48px}
+textarea{min-height:96px;resize:vertical}
+input:focus,select:focus,textarea:focus{
+  border-color:#68732d;box-shadow:0 0 0 2px rgba(199,239,67,.08);
+}
+input[type="date"]{
+  width:100%;min-width:0;max-width:100%;
+  -webkit-appearance:none;appearance:none;
+}
+input[type="number"]{appearance:textfield;-moz-appearance:textfield}
+select{height:48px}
+.btn{
+  width:100%;min-height:48px;
+  background:var(--accent);color:#111;font-weight:900;
+  border:0;border-radius:13px;padding:12px 16px;
+}
+.btn.secondary{background:var(--card2);color:var(--text);border:1px solid var(--line)}
+.btn.danger{
+  width:auto;min-height:40px;background:transparent;
+  color:var(--red);border:1px solid #513238;padding:9px 12px;
+}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.between{justify-content:space-between}
+.item{
+  background:var(--card2);border-radius:14px;padding:15px;margin-top:9px;
+}
+.item h3{margin:0 0 6px;font-size:17px}
+.item p{white-space:pre-wrap;color:var(--muted);margin:7px 0;line-height:1.5}
+.badge{
+  display:inline-block;color:var(--accent);background:#30371d;
+  border-radius:20px;padding:4px 8px;font-size:12px
+}
+.progress{
+  height:9px;background:#0e0f12;border-radius:99px;
+  overflow:hidden;margin:11px 0 8px
+}
+.bar{height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .05s linear}
+.progress-row{display:flex;align-items:center;gap:11px}
+.progress-range{
+  flex:1!important;width:auto!important;height:34px!important;
+  margin:0!important;padding:0!important;border:0!important;
+  background:transparent!important;box-shadow:none!important;
+  accent-color:var(--accent);touch-action:none;
+  cursor:pointer;
+}
+.progress-range::-webkit-slider-runnable-track{
+  height:7px;background:#3a3e46;border-radius:99px;
+}
+.progress-range::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:28px;height:28px;margin-top:-10.5px;
+  border-radius:50%;background:var(--accent);
+  border:3px solid #101216;
+  box-shadow:0 1px 5px rgba(0,0,0,.5);
+}
+.progress-range::-moz-range-track{height:7px;background:#3a3e46;border-radius:99px}
+.progress-range::-moz-range-thumb{
+  width:24px;height:24px;border-radius:50%;
+  background:var(--accent);border:3px solid #101216;
+}
+.progress-number{width:42px;text-align:right;font-weight:900;font-size:14px}
+
+.metro-card{padding:16px}
+.metro-top-tabs{display:flex;background:#101216;border:1px solid var(--line);border-radius:13px;padding:4px;gap:4px;margin-bottom:14px}
+.metro-top-tabs button{flex:1;border:0;background:transparent;color:var(--muted);border-radius:10px;padding:10px 8px;font-weight:800}
+.metro-top-tabs button.active{background:#2d3138;color:var(--text)}
+.metro-settings{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.metro-setting{
+  background:#101216;border:1px solid var(--line);border-radius:13px;padding:11px 12px
+}
+.metro-setting label{margin:0;font-size:12px}
+.metro-setting select{margin-top:5px;height:40px;padding:8px 10px;border-radius:10px}
+.bpm-box{text-align:center;padding:12px 4px 4px}
+.bpm-value{font-size:58px;font-weight:900;line-height:1}
+.bpm-unit{font-size:12px;color:var(--muted);margin-top:5px}
+.bpm-controls{display:flex;align-items:center;gap:10px;margin-top:14px}
+.metro-round-btn{
+  width:48px;height:48px;flex:0 0 48px;border-radius:50%;
+  border:1px solid var(--line);background:#24272d;color:var(--text);
+  font-size:20px;font-weight:900
+}
+.bpm-range{
+  flex:1!important;width:auto!important;height:36px!important;
+  margin:0!important;padding:0!important;border:0!important;
+  background:transparent!important;box-shadow:none!important;
+  accent-color:var(--accent);touch-action:none
+}
+.bpm-range::-webkit-slider-runnable-track{height:7px;background:#3a3e46;border-radius:99px}
+.bpm-range::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:30px;height:30px;
+  margin-top:-11.5px;border-radius:50%;background:var(--accent);
+  border:3px solid #101216;box-shadow:0 1px 5px rgba(0,0,0,.5)
+}
+.bpm-range::-moz-range-track{height:7px;background:#3a3e46;border-radius:99px}
+.bpm-range::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--accent);border:3px solid #101216}
+.metro-tap{display:flex;gap:8px;margin-top:10px}
+.metro-tap .btn{min-height:42px}
+.metro-grid-title{font-size:13px;color:var(--muted);margin:18px 0 8px}
+.rhythm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.rhythm-btn{
+  border:1px solid var(--line);background:#101216;color:var(--muted);
+  border-radius:11px;padding:11px 4px;min-height:52px;font-size:12px;font-weight:800
+}
+.rhythm-btn.active{border-color:#68732d;background:#30371d;color:var(--text)}
+.beat-display{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin:15px 0 4px}
+.beat-dot{
+  width:14px;height:14px;border-radius:50%;background:#3b3f47;
+  transition:transform .06s,background .06s,box-shadow .06s
+}
+.beat-dot.current{background:var(--accent);transform:scale(1.45);box-shadow:0 0 0 4px rgba(199,239,67,.12)}
+.beat-dot.accent{background:#f4f5f6}
+.metro-options{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:13px}
+.metro-option{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:8px;background:#101216;border:1px solid var(--line);
+  border-radius:12px;padding:11px 12px;color:var(--muted);font-size:13px
+}
+.metro-option input{width:20px;height:20px;margin:0;accent-color:var(--accent)}
+.metro-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:15px}
+.metro-actions .btn{min-height:54px}
+.metro-actions .btn.primary-large{font-size:17px}
+.metro-status{text-align:center;min-height:21px;color:var(--accent);font-size:12px;font-weight:800;margin-top:9px}
+.metro-fullscreen{margin-top:9px}
+.metro-fullscreen .btn{min-height:42px}
+.metro-silent-note{font-size:12px;color:var(--muted);line-height:1.45;margin-top:8px}
+
+/* Metronome fullscreen */
+body.metro-is-fullscreen{overflow:hidden}
+.metro-card.metro-fullscreen-mode{
+  position:fixed;inset:0;z-index:1000;width:100vw;height:100dvh;max-height:100dvh;
+  margin:0!important;border-radius:0;padding:18px;overflow:auto;
+  background:var(--bg);
+}
+.metro-fullscreen-mode .metro-full-layout{
+  display:grid;grid-template-columns:minmax(300px,1fr) minmax(320px,1fr);
+  gap:18px;align-items:start;
+}
+.metro-fullscreen-mode .bpm-value{font-size:84px}
+.metro-fullscreen-mode .beat-dot{width:20px;height:20px}
+.metro-fullscreen-mode .rhythm-btn{min-height:68px;font-size:14px}
+.metro-fullscreen-mode .metro-option{min-height:54px}
+.metro-fullscreen-mode .metro-actions .btn{min-height:64px;font-size:17px}
+.metro-fullscreen-mode .metro-fullscreen .btn{min-height:50px}
+@media(orientation:landscape){
+  .metro-card.metro-fullscreen-mode{padding:12px 20px}
+  .metro-fullscreen-mode .metro-full-layout{grid-template-columns:minmax(360px,1fr) minmax(360px,1fr);gap:28px}
+  .metro-fullscreen-mode .metro-top-tabs{margin-bottom:8px}
+  .metro-fullscreen-mode .bpm-box{padding-top:5px}
+}
+@media(orientation:portrait){
+  .metro-card.metro-fullscreen-mode .metro-full-layout{grid-template-columns:1fr}
+}
+@media(max-width:500px){
+  .metro-settings{grid-template-columns:1fr 1fr}
+  .bpm-value{font-size:54px}
+  .rhythm-grid{gap:6px}
+}
+
+.timer{text-align:center;padding:28px 12px}
+.time{font-size:62px;font-weight:900;letter-spacing:2px}
+.mode{color:var(--accent);font-weight:900}
+.controls{justify-content:center;margin:18px 0}
+.controls .btn{width:auto;min-width:125px}
+.empty{text-align:center;color:var(--muted);padding:22px}
+.toast{
+  position:fixed;left:50%;
+  bottom:calc(20px + env(safe-area-inset-bottom));
+  transform:translateX(-50%);background:#f6f7f8;color:#111;
+  padding:10px 15px;border-radius:12px;font-weight:800;
+  display:none;z-index:20;max-width:90%;text-align:center
+}
+
+/* Metronome fullscreen */
+body.metro-is-fullscreen{overflow:hidden}
+.metro-card.metro-fullscreen-mode{
+  position:fixed;inset:0;z-index:1000;width:100vw;height:100dvh;max-height:100dvh;
+  margin:0!important;border-radius:0;padding:18px;overflow:auto;
+  background:var(--bg);
+}
+.metro-fullscreen-mode .metro-full-layout{
+  display:grid;grid-template-columns:minmax(300px,1fr) minmax(320px,1fr);
+  gap:18px;align-items:start;
+}
+.metro-fullscreen-mode .bpm-value{font-size:84px}
+.metro-fullscreen-mode .beat-dot{width:20px;height:20px}
+.metro-fullscreen-mode .rhythm-btn{min-height:68px;font-size:14px}
+.metro-fullscreen-mode .metro-option{min-height:54px}
+.metro-fullscreen-mode .metro-actions .btn{min-height:64px;font-size:17px}
+.metro-fullscreen-mode .metro-fullscreen .btn{min-height:50px}
+@media(orientation:landscape){
+  .metro-card.metro-fullscreen-mode{padding:12px 20px}
+  .metro-fullscreen-mode .metro-full-layout{grid-template-columns:minmax(360px,1fr) minmax(360px,1fr);gap:28px}
+  .metro-fullscreen-mode .metro-top-tabs{margin-bottom:8px}
+  .metro-fullscreen-mode .bpm-box{padding-top:5px}
+}
+@media(orientation:portrait){
+  .metro-card.metro-fullscreen-mode .metro-full-layout{grid-template-columns:1fr}
+}
+@media(max-width:500px){
+  .app{padding-left:12px;padding-right:12px}
+  .brand{font-size:24px}
+  nav button{padding:10px 13px}
+  .hero{padding:19px}
+  .grid{gap:7px}
+  .card{padding:14px}
+  .stat{font-size:18px}
+  .time{font-size:52px}
+  h2{font-size:25px}
+}
+
+/* Revised metronome UI */
+.metro-control-row{display:flex;gap:7px;align-items:flex-start;flex-wrap:wrap}
+.metro-pop-wrap{position:relative;flex:1 1 0;min-width:0}
+.metro-full-only{display:none}
+.metro-pill{width:100%;height:58px;border:1px solid var(--line);border-radius:18px;background:#101216;color:var(--text);font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px}
+.metro-pill span{color:var(--muted);font-size:13px}
+.metro-pill.rhythm-pill{color:#8fb0ff}
+.metro-clear{position:absolute;right:-5px;top:-7px;width:25px;height:25px;border-radius:50%;border:1px solid var(--line);background:#101216;color:var(--muted);z-index:5}
+.metro-pop{display:none;position:absolute;z-index:30;left:0;right:0;top:64px;padding:10px;background:#f7f8fb;color:#15171b;border:1px solid #dfe2e8;border-radius:20px;box-shadow:0 16px 35px rgba(0,0,0,.28)}
+.metro-pop.open{display:grid}
+.metro-pop button{min-height:44px;border:0;background:transparent;border-radius:12px;color:#202329;font-weight:800}
+.metro-pop button.active{background:#e7efff;color:#245fd8}
+.metro-pop.note-pop{grid-template-columns:repeat(2,1fr);gap:6px}
+.metro-note-option{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:5px;line-height:1.15}.note-icon{display:flex;align-items:center;justify-content:center;height:34px;font-size:29px}.note-icon svg{width:72px;height:42px;display:block}
+.metro-pop.tuplet-pop{grid-template-columns:repeat(4,1fr);gap:5px;min-width:310px;left:auto;right:0}
+.metro-pop.detail-pop{grid-template-columns:repeat(4,1fr);gap:6px;min-width:310px;left:auto;right:0}
+.metro-pop.detail-pop button{font-size:11px;line-height:1.2;padding:7px 4px}
+.metro-pop.detail-pop .rhythm-symbol{display:block;font-size:20px;line-height:1;margin-bottom:4px}
+.metro-mini-info{display:flex;align-items:center;justify-content:center;gap:8px;margin:10px 0 5px}
+.metro-time{font-size:25px;font-weight:900;color:#aeb4bd;letter-spacing:.5px}
+.mini-btn{border:1px solid var(--line);background:#101216;color:var(--muted);border-radius:14px;padding:7px 11px;font-size:12px;font-weight:800}
+.mini-btn.active{color:var(--accent);border-color:#68732d;background:#30371d}
+.beat-stage{min-height:195px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:8px -16px 12px;padding:34px 20px;display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:nowrap;overflow:hidden}
+.beat-holder{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:11px;min-width:58px}
+.beat-number{cursor:pointer;user-select:none;width:58px;height:58px;border-radius:50%;background:#f0f2f7;color:#7f8794;display:flex;align-items:center;justify-content:center;font-size:29px;font-weight:900;transition:transform .08s,color .08s,box-shadow .08s}
+.beat-number.accent{background:#fff0cf;color:#c86b00}
+.beat-number.silent{background:#dfe3e9;color:#a5acb7;opacity:.72}
+.beat-number.current{transform:scale(1.08);color:#fff;background:#35cf8a;box-shadow:0 0 0 5px rgba(53,207,138,.10),0 0 28px rgba(53,207,138,.62)}
+.beat-number.current.accent{background:#35cf8a;color:#fff}
+.beat-number.current.silent{background:#aeb5bf;color:#fff;box-shadow:0 0 0 5px rgba(174,181,191,.10),0 0 18px rgba(174,181,191,.38)}
+.beat-subdots{display:flex;align-items:center;justify-content:center;gap:5px;min-height:8px}
+.subdot{width:7px;height:7px;border-radius:50%;background:#b8bdc7;transition:transform .07s,background .07s,box-shadow .07s}.subdot.current{background:#35cf8a;transform:scale(1.35);box-shadow:0 0 7px rgba(53,207,138,.65)}
+.metro-sounds{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:8px 0 14px}
+.sound-chip{border:1px solid var(--line);background:#101216;color:var(--muted);border-radius:20px;padding:8px 11px;font-size:11px;font-weight:800}
+.sound-chip i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#5f6876;margin-right:5px}
+.sound-chip.active{background:#26382e;color:#e8fff0;border-color:#35cf8a}.sound-chip.active i{background:#35cf8a}
+.bpm-adjust{display:flex;align-items:center;justify-content:space-between}
+.bpm-ten{border:0;background:#101216;color:var(--text);border-radius:50%;width:58px;height:44px;font-size:16px;font-weight:900}
+.bpm-value{font-size:56px}
+.metro-actions{position:relative;display:flex;justify-content:center;align-items:center;margin-top:12px;min-height:82px}
+.metro-icon-btn{position:absolute;right:0;height:58px;width:58px;border-radius:17px;border:1px solid var(--line);background:#101216;color:var(--text);font-size:23px}
+.metro-main-btn{height:76px;width:76px;justify-self:center;border-radius:50%;border:0;background:#35cf8a;color:#fff;font-size:31px;font-weight:900;box-shadow:0 8px 22px rgba(53,207,138,.25);display:flex;align-items:center;justify-content:center;padding:0}
+.metro-main-btn.running{font-size:0}.metro-main-btn.running:after{content:'■';font-size:24px}
+.metro-extra-row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:9px}
+
+.metro-reserve-panel{display:none;margin-top:12px;padding:13px 14px;border:1px solid var(--line);border-radius:16px;background:#15181d}
+.metro-reserve-panel.open{display:block}
+.metro-reserve-toggle{height:58px;min-width:76px;padding:0 16px;border-radius:17px;border:1px solid var(--line);background:#101216;color:var(--text);font-size:14px;font-weight:900}
+.metro-reserve-toggle.active{border-color:#35cf8a;background:#26382e;color:#e8fff0}
+.metro-actions .metro-reserve-toggle{position:absolute;left:0}
+@media(max-width:500px){.metro-reserve-toggle{height:52px;min-width:70px}.metro-actions .metro-reserve-toggle{left:0}}
+
+.metro-reserve{margin-top:0;padding-top:0;border-top:0}
+.metro-reserve-title{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:9px}
+.metro-reserve-title b{font-size:15px}.metro-reserve-title span{font-size:11px;color:var(--muted)}
+.metro-reserve-add{display:flex;align-items:end;gap:7px}.metro-reserve-add label{flex:1;color:var(--muted);font-size:11px;font-weight:800}.metro-reserve-add input{display:block;width:100%;margin-top:5px;height:43px;border:1px solid var(--line);border-radius:12px;background:#101216;color:var(--text);padding:0 10px;font-weight:800;text-align:center}
+.reserve-arrow{padding-bottom:12px;color:var(--muted);font-weight:900}.reserve-add-btn{height:43px;padding:0 13px;border:1px solid #35cf8a;border-radius:12px;background:#26382e;color:#e8fff0;font-weight:900}
+.metro-reserve-list{display:flex;flex-direction:column;gap:6px;margin-top:9px}.reserve-item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 11px;border:1px solid var(--line);border-radius:12px;background:#101216;font-size:12px}.reserve-item .reserve-meta{color:var(--text);font-weight:800}.reserve-item .reserve-remove{border:0;background:transparent;color:var(--muted);font-size:18px;line-height:1;padding:2px 5px}.reserve-empty{color:var(--muted);font-size:11px;text-align:center;padding:5px}
+@media(max-width:500px){.metro-reserve-title{display:block}.metro-reserve-title span{display:block;margin-top:3px}.metro-reserve-add{gap:5px}.reserve-add-btn{padding:0 10px}}
+@media(max-width:500px){.metro-control-row{gap:6px}.metro-pill{height:52px;font-size:14px}.metro-pop{top:58px}.beat-stage{min-height:175px;gap:12px}.beat-number{width:55px;height:55px}.beat-holder{min-width:55px}.metro-icon-btn{height:52px;width:52px}.metro-main-btn{width:70px;height:70px}}
+@media(orientation:landscape){.metro-card.metro-fullscreen-mode .beat-stage{min-height:130px}.metro-card.metro-fullscreen-mode .bpm-value{font-size:62px}.metro-card.metro-fullscreen-mode .metro-main-btn{width:68px;height:68px}.metro-card.metro-fullscreen-mode{padding:14px 24px}.metro-card.metro-fullscreen-mode .metro-full-layout{display:block}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="brand">BASS<b>.</b>PRACTICE</div>
+  <nav id="nav">
+    <button class="active" data-page="home">홈</button>
+    <button data-page="records">기록</button>
+    <button data-page="routine">루틴</button>
+    <button data-page="songs">곡 관리</button>
+    <button data-page="metronome">메트로놈</button>
+    <button data-page="timer">타이머</button>
+  </nav>
+</header>
+
+<main>
+<section id="home" class="page active">
+<div class="hero"><h1>오늘도 베이스를 잡자.</h1><div class="muted">연습한 만큼 기록하고, 조금씩 성장하세요.</div></div>
+<div class="grid">
+<div class="card"><div class="muted">총 연습</div><div class="stat" id="total">0분</div></div>
+<div class="card"><div class="muted">기록</div><div class="stat" id="count">0회</div></div>
+<div class="card"><div class="muted">곡</div><div class="stat" id="songCount">0곡</div></div>
+</div>
+<div class="title">최근 연습</div><div id="recent"></div>
+</section>
+
+<section id="records" class="page">
+<h2>연습 기록</h2><div class="muted">기록은 이 Safari에서 기기에 저장됩니다.</div>
+<div class="card" style="margin-top:12px">
+<label>날짜<input id="date" type="date"></label>
+<label>연습 시간(분)<input id="minutes" type="number" min="1" inputmode="numeric" placeholder="예: 40"></label>
+<label>연습한 곡<select id="recordSong"><option value="">곡을 선택하세요</option></select></label>
+<label>오늘의 목표<input id="goal" placeholder="예: 100BPM 안정적으로 연주"></label>
+<label>연습 내용<textarea id="content" placeholder="오늘 연습한 내용"></textarea></label>
+<label>느낀 점<textarea id="memo" placeholder="어려웠던 점 / 다음 목표"></textarea></label>
+<button class="btn" onclick="addRecord()">기록 저장</button>
+</div>
+<div class="title">전체 기록</div><div id="recordsList"></div>
+</section>
+
+<section id="routine" class="page">
+<h2>오늘의 연습 루틴</h2>
+<div class="card"><label>연습 시간<select id="routineTime">
+<option value="15">15분</option><option value="30" selected>30분</option><option value="45">45분</option><option value="60">1시간</option>
+<option value="90">1시간 30분</option><option value="120">2시간</option><option value="150">2시간 30분</option>
+<option value="180">3시간</option><option value="210">3시간 30분</option><option value="240">4시간</option>
+<option value="270">4시간 30분</option><option value="300">5시간</option>
+</select></label><button class="btn" onclick="makeRoutine()">루틴 생성</button></div>
+<div id="routineResult" style="margin-top:12px"></div>
+</section>
+
+<section id="songs" class="page">
+<h2>곡별 연습 관리</h2>
+<div class="card">
+<label>곡 이름<input id="songName" placeholder="예: 연습곡"></label>
+<label>난이도<select id="level"><option>쉬움</option><option selected>보통</option><option>어려움</option></select></label>
+<label>현재 BPM<input id="bpm" type="number" min="1" inputmode="numeric"></label>
+<label>목표 BPM<input id="targetBpm" type="number" min="1" inputmode="numeric"></label>
+<label>메모<textarea id="songMemo" placeholder="어려운 구간 등"></textarea></label>
+<button class="btn" onclick="addSong()">곡 추가</button>
+</div>
+<div class="title">내 곡</div><div id="songsList"></div>
+</section>
+
+
+<section id="metronome" class="page">
+<h2>메트로놈</h2>
+<div class="card metro-card" id="metroCard" style="margin-top:12px">
+  <div class="metro-control-row">
+    <div class="metro-pop-wrap">
+      <button class="metro-pill" id="meterButton" onclick="toggleMetroMenu('meterMenu')">4/4 <span>⌄</span></button>
+      <div class="metro-pop" id="meterMenu"></div>
+    </div>
+    <div class="metro-pop-wrap">
+      <button class="metro-pill" id="noteButton" onclick="toggleMetroMenu('noteMenu')">♩ <span>⌄</span></button>
+      <div class="metro-pop note-pop" id="noteMenu"></div>
+    </div>
+  </div>
+
+  <div class="beat-stage" id="beatStage"></div>
+
+  <div class="metro-sounds">
+    <button class="sound-chip active" data-sound="soft" onclick="chooseSound('soft')"><i></i>소프트</button>
+    <button class="sound-chip" data-sound="wood" onclick="chooseSound('wood')"><i></i>우드블록</button>
+    <button class="sound-chip" data-sound="high" onclick="chooseSound('high')"><i></i>하이클릭</button>
+    <button class="sound-chip" data-sound="voice" onclick="chooseSound('voice')"><i></i>목소리</button>
+  </div>
+
+  <div class="bpm-box">
+    <div class="bpm-adjust"><button class="bpm-ten" onclick="changeBpm(-10)">−10</button><div><div class="bpm-value" id="metroBpmValue">85</div><div class="bpm-unit">BPM</div></div><button class="bpm-ten" onclick="changeBpm(10)">+10</button></div>
+    <div class="bpm-controls">
+      <button class="metro-round-btn" onclick="changeBpm(-1)">−</button>
+      <input id="metroBpm" class="bpm-range" type="range" min="30" max="240" step="1" value="85" oninput="setBpm(this.value)" aria-label="BPM">
+      <button class="metro-round-btn" onclick="changeBpm(1)">+</button>
+    </div>
+  </div>
+
+  <div class="metro-reserve-panel" id="metroReservePanel">
+    <div class="metro-reserve">
+      <div class="metro-reserve-title"><b>템포 예약</b><span>몇 마디 뒤 BPM을 바꿀지 예약</span></div>
+      <div class="metro-reserve-add">
+        <label>몇 마디 뒤<input id="reserveMeasures" type="number" min="1" max="999" step="1" value="4"></label>
+        <span class="reserve-arrow">→</span>
+        <label>BPM<input id="reserveBpm" type="number" min="30" max="240" step="1" value="100"></label>
+        <button class="reserve-add-btn" onclick="addTempoReservation()">예약</button>
+      </div>
+      <div class="metro-reserve-list" id="metroReserveList"></div>
+    </div>
+  </div>
+
+  <div class="metro-actions">
+    <button class="metro-reserve-toggle" id="metroReserveToggle" onclick="toggleTempoReservationPanel()" aria-label="예약">예약</button>
+    <button class="metro-main-btn" id="metroStart" onclick="toggleMetronome()">▶</button>
+    <button class="metro-icon-btn" onclick="toggleMetroFullscreen()" aria-label="전체화면">↗</button>
+  </div>
+  <div class="metro-status" id="metroStatus">준비됨</div>
+</div>
+</section>
+
+<section id="timer" class="page">
+<h2>연습 타이머</h2>
+<div class="card timer">
+<div class="mode" id="mode">자유 연습</div><div class="time" id="clock">00:00</div>
+<div class="row controls"><button class="btn" id="start" onclick="toggle()">시작</button><button class="btn secondary" onclick="resetTimer()">초기화</button></div>
+<label style="text-align:left">모드<select id="timerMode" onchange="timerChanged()"><option value="free">자유 연습</option><option value="interval">10분 연습 / 2분 휴식</option></select></label>
+</div>
+</section>
+</main>
+</div>
+<div id="toast" class="toast"></div>
+
+<script>
+const STORAGE="bass-practice-v2";
+let data;
+try{data=JSON.parse(localStorage.getItem(STORAGE))||{records:[],songs:[]}}catch(e){data={records:[],songs:[]}}
+const $=id=>document.getElementById(id);
+$("date").value=new Date().toISOString().slice(0,10);
+
+function persist(){try{localStorage.setItem(STORAGE,JSON.stringify(data));return true}catch(e){show("이 브라우저에서는 저장할 수 없습니다.");return false}}
+function show(msg){let t=$("toast");t.textContent=msg;t.style.display="block";clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.style.display="none",1800)}
+function esc(s=""){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function addRecord(){
+ let min=Number($("minutes").value);
+ if(!min||min<1){show("연습 시간을 입력하세요.");$("minutes").focus();return}
+ data.records.unshift({id:Date.now(),date:$("date").value,minutes:min,song:$("recordSong").value.trim(),goal:$("goal").value.trim(),content:$("content").value.trim(),memo:$("memo").value.trim()});
+ if(persist()){["minutes","recordSong","goal","content","memo"].forEach(id=>$(id).value="");render();show("연습 기록을 저장했습니다.")}
+}
+function delRecord(id){data.records=data.records.filter(x=>x.id!==id);persist();render()}
+function addSong(){
+ let name=$("songName").value.trim();if(!name){show("곡 이름을 입력하세요.");return}
+ data.songs.push({id:Date.now(),name,level:$("level").value,bpm:Number($("bpm").value)||0,target:Number($("targetBpm").value)||0,memo:$("songMemo").value.trim(),progress:0,status:"연습 중"});
+ if(persist()){["songName","bpm","targetBpm","songMemo"].forEach(id=>$(id).value="");render();show("곡을 추가했습니다.")}
+}
+function delSong(id){data.songs=data.songs.filter(x=>x.id!==id);persist();render()}
+function progressStatus(v){return v>=100?"완곡":v>=70?"거의 완성":"연습 중"}
+function previewProgress(id,val){
+  const v=Math.max(0,Math.min(100,Number(val)||0));
+  const bar=$("bar-"+id), pct=$("percent-"+id), status=$("status-"+id);
+  if(bar)bar.style.width=v+"%";
+  if(pct)pct.textContent=v+"%";
+  if(status)status.textContent=progressStatus(v);
+}
+function saveProgress(id,val){
+  const s=data.songs.find(x=>x.id===id); if(!s)return;
+  s.progress=Math.max(0,Math.min(100,Number(val)||0));
+  s.status=progressStatus(s.progress);
+  persist();
+}
+function render(){
+ const recordSong=$("recordSong");
+ const currentSong=recordSong ? recordSong.value : "";
+ if(recordSong){
+   recordSong.innerHTML='<option value="">곡을 선택하세요</option>'+
+     data.songs.map(s=>`<option value="${esc(s.name)}">${esc(s.name)}</option>`).join("");
+   if(data.songs.some(s=>s.name===currentSong)) recordSong.value=currentSong;
+ }
+ let total=data.records.reduce((a,r)=>a+Number(r.minutes),0);$("total").textContent=total>=60?Math.floor(total/60)+"시간 "+total%60+"분":total+"분";$("count").textContent=data.records.length+"회";$("songCount").textContent=data.songs.length+"곡";
+ $("recent").innerHTML=data.records.slice(0,3).map(r=>`<div class="item"><b>${esc(r.date)}</b> · ${r.minutes}분 ${r.song?"· "+esc(r.song):""}</div>`).join("")||'<div class="empty">아직 기록이 없습니다.</div>';
+ $("recordsList").innerHTML=data.records.map(r=>`<div class="item"><div class="row between"><div><span class="badge">${esc(r.date)}</span> <b>${r.minutes}분</b>${r.song?" · "+esc(r.song):""}</div><button class="btn danger" onclick="delRecord(${r.id})">삭제</button></div>${r.goal?`<p><b>목표:</b> ${esc(r.goal)}</p>`:""}${r.content?`<p>${esc(r.content)}</p>`:""}${r.memo?`<p><b>느낀 점:</b> ${esc(r.memo)}</p>`:""}</div>`).join("")||'<div class="empty">아직 기록이 없습니다.</div>';
+ $("songsList").innerHTML=data.songs.map(s=>`<div class="item"><div class="row between"><div><h3>${esc(s.name)}</h3><span class="badge">${esc(s.level)}</span> · <span id="status-${s.id}">${esc(s.status)}</span></div><button class="btn danger" onclick="delSong(${s.id})">삭제</button></div><p>BPM ${s.bpm||"-"} / 목표 ${s.target||"-"}</p><div class="progress"><div class="bar" id="bar-${s.id}" style="width:${s.progress}%"></div></div><div class="progress-row"><input class="progress-range" type="range" min="0" max="100" value="${s.progress}" aria-label="${esc(s.name)} 진행도" oninput="previewProgress(${s.id},this.value)" onchange="saveProgress(${s.id},this.value)"><b class="progress-number" id="percent-${s.id}">${s.progress}%</b></div>${s.memo?`<p>${esc(s.memo)}</p>`:""}</div>`).join("")||'<div class="empty">등록한 곡이 없습니다.</div>';
+}
+function makeRoutine(){
+ let t=Number($("routineTime").value);
+ const labels=["워밍업","스케일/핑거링","리듬","곡 연습","약점 연습","자유연주"];
+ const base=[0.10,0.15,0.15,0.30,0.20,0.10];
+ let mins=base.map(x=>Math.floor((t*x)/5)*5);
+ let diff=t-mins.reduce((a,b)=>a+b,0);
+ let order=[3,4,1,2,5,0], oi=0;
+ while(diff>0){mins[order[oi%order.length]]+=5;diff-=5;oi++}
+ const parts=labels.map((name,i)=>[name,mins[i]]).filter(x=>x[1]>0);
+ $("routineResult").innerHTML='<div class="card"><h3>'+formatRoutineTime(t)+' 루틴</h3>'+parts.map((p,i)=>`<div class="item"><div class="row between"><b>${i+1}. ${p[0]}</b><span class="badge">${p[1]}분</span></div></div>`).join("")+'</div>';
+}
+function formatRoutineTime(t){
+ if(t<60)return t+"분";
+ const h=Math.floor(t/60),m=t%60;
+ return h+"시간"+(m?(" "+m+"분"):"");
+}
+
+/* ===== Web Audio Metronome ===== */
+let metroBpm=85, metroMeterNum=4, metroMeterDen=4;
+let metroBeatModes=['accent','normal','normal','normal'];
+let metroNote='quarter', metroGrid='16', metroTuplet='none', metroPattern='none';
+let metroAccent=true, metroMute=false, metroFlash=true, metroWake=true;
+let metroSound='soft', metroRunning=false, metroAudio=null, metroGain=null;
+let metroTimer=null, metroNextTime=0, metroStep=0, metroMeasure=0, metroLookahead=25, metroScheduleAhead=.12;
+let metroWakeLock=null, metroTapTimes=[], metroMode='basic';
+let metroVisualBeat=-1, metroVisualSub=-1, metroVoices=[];
+let metroVisualQueue=[];
+let metroTempoReservations=[];
+let metroBaseBpm=85;
+const meterChoices=['1/4','2/4','3/4','4/4','6/8','12/8'];
+const noteChoices=[
+ ['quarter','♩','4분음표',1],
+ ['eighth','♫','8분음표',2],
+ ['triplet','triplet','셋잇단음표',3],
+ ['sixteenth','16th','16분음표',4]
+];
+const gridChoices=[['8','8비트',2],['16','16비트',4],['32','32비트',8]];
+const tupletChoices=[['none','연음 없음',1,1],['2','2연음',2,1],['3beat','2박 3연음',3,2],['3','3연음',3,1],['4','4연음',4,1],['5','5연음',5,1],['6','6연음',6,1],['7','7연음',7,1],['8','8연음',8,1],['9','9연음',9,1],['5beat2','2박 5연음',5,2],['7beat2','2박 7연음',7,2],['9beat2','2박 9연음',9,2],['5beat4','4박 5연음',5,4],['7beat4','4박 7연음',7,4],['9beat4','4박 9연음',9,4]];
+const detailPatterns=[
+ ['none','♩','기본', [0]],['eighth','♫','8분', [0,2]],['off8','♬','엇박 8분', [1,3]],['sixteenth','♬','16분', [0,1,2,3]],
+ ['dotted','♩·♪','점8+16', [0,3]],['reverse','♪·♩','16+점8', [0,1]],['rest1','𝄽♪','앞 쉼', [2]],['rest2','♪𝄽','뒤 쉼', [0]],
+ ['sync1','♪·♪','싱코페이션', [0,2,3]],['sync2','·♪♪','싱코페이션 2', [1,2]],['two','♩♩','2박 패턴', [0]],['reverse2','𝄽♪','2박 엇박', [1]],
+ ['rest3','𝄽♪','쉼+8분', [3]],['sync3','♪·','뒤쪽 악센트', [1,3]]
+];
+function setMetroMode(mode){
+  metroMode='basic';
+  buildMetroMenus(); updateMetroLabels(); updateBeatDisplay();
+}
+function noteIcon(kind){
+  const common='viewBox="0 0 96 54" aria-hidden="true" focusable="false"';
+  if(kind==='quarter') return `<svg ${common}>
+    <ellipse cx="24" cy="40" rx="9" ry="6.5" fill="currentColor" transform="rotate(-18 24 40)"/>
+    <rect x="30" y="7" width="4.5" height="32" rx="1.5" fill="currentColor"/>
+  </svg>`;
+  if(kind==='eighth') return `<svg ${common}>
+    <ellipse cx="22" cy="40" rx="8.5" ry="6" fill="currentColor" transform="rotate(-18 22 40)"/>
+    <ellipse cx="49" cy="40" rx="8.5" ry="6" fill="currentColor" transform="rotate(-18 49 40)"/>
+    <rect x="28" y="7" width="4.5" height="33" rx="1.5" fill="currentColor"/>
+    <rect x="55" y="7" width="4.5" height="33" rx="1.5" fill="currentColor"/>
+    <path d="M30 7H59V13H30Z" fill="currentColor"/>
+  </svg>`;
+  if(kind==='triplet') return `<svg ${common}>
+    <ellipse cx="18" cy="40" rx="7.5" ry="5.5" fill="currentColor" transform="rotate(-18 18 40)"/>
+    <ellipse cx="42" cy="40" rx="7.5" ry="5.5" fill="currentColor" transform="rotate(-18 42 40)"/>
+    <ellipse cx="66" cy="40" rx="7.5" ry="5.5" fill="currentColor" transform="rotate(-18 66 40)"/>
+    <rect x="23" y="8" width="4" height="32" rx="1.3" fill="currentColor"/>
+    <rect x="47" y="8" width="4" height="32" rx="1.3" fill="currentColor"/>
+    <rect x="71" y="8" width="4" height="32" rx="1.3" fill="currentColor"/>
+    <path d="M25 8H75V14H25Z" fill="currentColor"/>
+    <text x="50" y="8" font-size="11" font-weight="800" text-anchor="middle" fill="currentColor">3</text>
+  </svg>`;
+  return `<svg ${common}>
+    <ellipse cx="14" cy="40" rx="6.5" ry="5" fill="currentColor" transform="rotate(-18 14 40)"/>
+    <ellipse cx="35" cy="40" rx="6.5" ry="5" fill="currentColor" transform="rotate(-18 35 40)"/>
+    <ellipse cx="56" cy="40" rx="6.5" ry="5" fill="currentColor" transform="rotate(-18 56 40)"/>
+    <ellipse cx="77" cy="40" rx="6.5" ry="5" fill="currentColor" transform="rotate(-18 77 40)"/>
+    <rect x="18" y="8" width="4" height="32" rx="1.3" fill="currentColor"/>
+    <rect x="39" y="8" width="4" height="32" rx="1.3" fill="currentColor"/>
+    <rect x="60" y="8" width="4" height="32" rx="1.3" fill="currentColor"/>
+    <rect x="81" y="8" width="4" height="32" rx="1.3" fill="currentColor"/>
+    <path d="M20 8H85V14H20Z" fill="currentColor"/>
+    <path d="M20 16H85V21H20Z" fill="currentColor"/>
+  </svg>`;
+}
+function buildMetroMenus(){
+  const meter=$('meterMenu'),note=$('noteMenu');
+  if(meter) meter.innerHTML=meterChoices.map(v=>`<button class="${metroMeterNum+'/'+metroMeterDen===v?'active':''}" onclick="selectMeter('${v}')">${v}</button>`).join('');
+  if(note) note.innerHTML=noteChoices.map(v=>`<button class="metro-note-option ${metroNote===v[0]?'active':''}" onclick="selectNote('${v[0]}')"><span class="note-icon">${noteIcon(v[0])}</span><span>${v[2]}</span></button>`).join('');
+}
+function toggleMetroMenu(id){document.querySelectorAll('.metro-pop').forEach(x=>{if(x.id!==id)x.classList.remove('open')});$(id).classList.toggle('open')}
+document.addEventListener('click',e=>{if(!e.target.closest('.metro-pop-wrap'))document.querySelectorAll('.metro-pop').forEach(x=>x.classList.remove('open'))});
+function updateMetroLabels(){
+  const meter=$('meterButton'),note=$('noteButton');
+  if(meter) meter.innerHTML=`${metroMeterNum}/${metroMeterDen} <span>⌄</span>`;
+  const n=noteChoices.find(x=>x[0]===metroNote)||noteChoices[0];
+  if(note) note.innerHTML=`${n[1]} <span>⌄</span>`;
+}
+function selectMeter(v){const [n,d]=v.split('/').map(Number);metroMeterNum=n;metroMeterDen=d;metroStep=0;metroMeasure=0;syncBeatModes();document.querySelectorAll('.metro-pop button').forEach(b=>b.classList.remove('active'));buildMetroMenus();updateMetroLabels();updateBeatDisplay();closeMetroMenus()}
+function selectNote(v){metroNote=v;metroStep=0;metroMeasure=0;buildMetroMenus();updateMetroLabels();updateBeatDisplay();closeMetroMenus()}
+function closeMetroMenus(){document.querySelectorAll('.metro-pop').forEach(x=>x.classList.remove('open'))}
+function meterInfo(){return {num:metroMeterNum,den:metroMeterDen}}
+function isCompoundMeter(){return metroMeterDen===8&&(metroMeterNum===6||metroMeterNum===12)}
+function syncBeatModes(){
+  const count=displayBeatCount();
+  const defaults=Array.from({length:count},(_,i)=>i===0?'accent':'normal');
+  metroBeatModes=metroBeatModes.slice(0,count);
+  while(metroBeatModes.length<count)metroBeatModes.push(defaults[metroBeatModes.length]);
+  metroBeatModes=metroBeatModes.map((m,i)=>(m==='accent'||m==='normal'||m==='silent')?m:defaults[i]);
+}
+function beatModeFor(beat){syncBeatModes();return metroBeatModes[beat]||'normal'}
+function cycleBeatMode(beat){
+  syncBeatModes();
+  const order=['accent','normal','silent'];
+  const current=beatModeFor(beat);
+  metroBeatModes[beat]=order[(order.indexOf(current)+1)%order.length];
+  updateBeatDisplay(metroVisualBeat,metroVisualSub);
+}
+function displayBeatCount(){
+  if(metroMeterNum===6 && metroMeterDen===8)return 2;
+  if(metroMeterNum===12 && metroMeterDen===8)return 4;
+  return metroMeterNum;
+}
+function displaySubdivisions(){return isCompoundMeter()?3:Math.max(1,Math.min(4,noteChoices.find(x=>x[0]===metroNote)?.[3]||1))}
+function baseDivisions(){return isCompoundMeter()?3:(noteChoices.find(x=>x[0]===metroNote)?.[3]||1)}
+function effectivePattern(){ return null; }
+function stepsPerBeat(){ return isCompoundMeter()?3:Math.max(1,Math.min(4,noteChoices.find(x=>x[0]===metroNote)?.[3]||1)); }
+function accentBeats(){if(!metroAccent)return []; return [0]}
+function updateBeatDisplay(active=-1,sub=-1){
+ const wrap=$('beatStage');if(!wrap)return;
+ metroVisualBeat=active; metroVisualSub=sub;
+ const accents=accentBeats();
+ const count=displayBeatCount();
+ syncBeatModes();
+ const subCount=displaySubdivisions();
+ const needsRebuild=wrap.children.length!==count || [...wrap.children].some(h=>h.querySelectorAll('.subdot').length!==subCount);
+ if(needsRebuild){
+   wrap.replaceChildren();
+   for(let i=0;i<count;i++){
+     const holder=document.createElement('div');holder.className='beat-holder';
+     const d=document.createElement('div');d.className='beat-number';d.dataset.beat=i;d.textContent=i+1;d.title='클릭하여 소리 모드 변경';d.addEventListener('click',()=>cycleBeatMode(i));holder.appendChild(d);
+     const dots=document.createElement('div');dots.className='beat-subdots';
+     for(let j=0;j<subCount;j++){const dot=document.createElement('span');dot.className='subdot';dot.dataset.sub=j;dots.appendChild(dot)}
+     holder.appendChild(dots);wrap.appendChild(holder);
+   }
+ }
+ // Hard guarantee: only the exact number of intended beat holders exists.
+ while(wrap.children.length>count)wrap.lastElementChild.remove();
+ while(wrap.children.length<count){
+   const i=wrap.children.length;
+   const holder=document.createElement('div');holder.className='beat-holder';
+   const d=document.createElement('div');d.className='beat-number';d.dataset.beat=i;d.textContent=i+1;d.title='클릭하여 소리 모드 변경';d.addEventListener('click',()=>cycleBeatMode(i));holder.appendChild(d);
+   const dots=document.createElement('div');dots.className='beat-subdots';
+   for(let j=0;j<subCount;j++){const dot=document.createElement('span');dot.className='subdot';dot.dataset.sub=j;dots.appendChild(dot)}
+   holder.appendChild(dots);wrap.appendChild(holder);
+ }
+ [...wrap.children].forEach((holder,i)=>{
+   const d=holder.querySelector('.beat-number');
+   const mode=beatModeFor(i);
+   d.classList.toggle('accent',mode==='accent');
+   d.classList.toggle('silent',mode==='silent');
+   d.classList.toggle('current',i===active);
+   holder.querySelectorAll('.subdot').forEach((dot,j)=>dot.classList.toggle('current',i===active&&j===sub));
+ });
+}
+function toggleTempoReservationPanel(){
+  const panel=$('metroReservePanel');
+  const btn=$('metroReserveToggle');
+  if(!panel||!btn)return;
+  const open=panel.classList.toggle('open');
+  btn.classList.toggle('active',open);
+}
+function renderTempoReservations(){
+  const box=$('metroReserveList'); if(!box)return;
+  const list=[...metroTempoReservations].sort((a,b)=>a.measure-b.measure);
+  box.innerHTML=list.length?list.map((r,i)=>`<div class="reserve-item"><span class="reserve-meta">${r.measure}마디 뒤 → ${r.bpm} BPM</span><button class="reserve-remove" onclick="removeTempoReservation(${i})" aria-label="예약 삭제">×</button></div>`).join(''):'<div class="reserve-empty">예약된 템포 변경이 없습니다.</div>';
+}
+function addTempoReservation(){
+  const m=Math.max(1,Math.min(999,Math.round(Number($('reserveMeasures')?.value)||1)));
+  const b=Math.max(30,Math.min(240,Math.round(Number($('reserveBpm')?.value)||metroBpm)));
+  const targetMeasure=metroRunning ? (metroMeasure+m) : m;
+  const existing=metroTempoReservations.findIndex(r=>r.measure===m);
+  if(existing>=0) metroTempoReservations[existing]={measure:m,bpm:b,applied:false,targetMeasure};
+  else metroTempoReservations.push({measure:m,bpm:b,applied:false,targetMeasure});
+  renderTempoReservations();
+}
+function removeTempoReservation(index){
+  const list=[...metroTempoReservations].sort((a,b)=>a.measure-b.measure);
+  const target=list[index];
+  if(target){const real=metroTempoReservations.indexOf(target);if(real>=0)metroTempoReservations.splice(real,1)}
+  renderTempoReservations();
+}
+function resetTempoReservations(){
+  metroTempoReservations.forEach(r=>{r.applied=false;r.targetMeasure=r.measure;});
+}
+function applyTempoReservationsAtMeasure(){
+  if(metroStep!==0)return;
+  metroTempoReservations.forEach(r=>{
+    const target=(Number.isFinite(r.targetMeasure)?r.targetMeasure:r.measure);
+    if(!r.applied && metroMeasure>=target){
+      setBpm(r.bpm); r.applied=true;
+    }
+  });
+}
+function setBpm(v){metroBpm=Math.max(30,Math.min(240,Math.round(Number(v)||85)));$('metroBpm').value=metroBpm;$('metroBpmValue').textContent=metroBpm}
+
+function changeBpm(delta){setBpm(metroBpm+delta)}
+function ensureMetroAudio(){if(!metroAudio){metroAudio=new (window.AudioContext||window.webkitAudioContext)();metroGain=metroAudio.createGain();metroGain.gain.value=.72;metroGain.connect(metroAudio.destination)}if(metroAudio.state==='suspended')metroAudio.resume()}
+function playTone(time,frequency,duration=.07,type='sine',volume=.55){const osc=metroAudio.createOscillator(),g=metroAudio.createGain();osc.type=type;osc.frequency.setValueAtTime(frequency,time);osc.connect(g);g.connect(metroGain);g.gain.setValueAtTime(.0001,time);g.gain.exponentialRampToValueAtTime(volume,time+.002);g.gain.exponentialRampToValueAtTime(.0001,time+duration);osc.start(time);osc.stop(time+duration+.01)}
+function loadSpeechVoices(){
+  if(!('speechSynthesis' in window))return;
+  metroVoices=window.speechSynthesis.getVoices()||[];
+}
+if('speechSynthesis' in window){loadSpeechVoices();window.speechSynthesis.addEventListener('voiceschanged',loadSpeechVoices)}
+function pickCalmVoice(){
+  const voices=metroVoices.length?metroVoices:window.speechSynthesis.getVoices();
+  return voices.find(v=>/Samantha|Ava|Karen|Moira|Google US English/i.test(v.name)) || voices.find(v=>/^en-US/i.test(v.lang)) || voices.find(v=>/^en/i.test(v.lang)) || null;
+}
+function speakBeat(beat,isAccent=false){
+  if(!('speechSynthesis' in window))return;
+  const words=['One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve'];
+  const word=words[beat]||String(beat+1);
+  try{
+    window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(word);u.lang='en-US';u.rate=isAccent?.72:.78;u.pitch=isAccent?1.03:.96;u.volume=isAccent?1:.9;
+    const v=pickCalmVoice();if(v)u.voice=v;
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+function clickSound(time,isAccent,beat=0){
+  if(!metroAudio)return;
+  if(metroSound==='soft')playTone(time,isAccent?1250:900,.065,'sine',isAccent?.78:.52);
+  else if(metroSound==='wood')playTone(time,isAccent?720:520,.075,'triangle',isAccent?.75:.5);
+  else if(metroSound==='high')playTone(time,isAccent?2200:1650,.055,'sine',isAccent?.78:.48);
+  else if(metroSound==='voice' && arguments.length>=3 && beat>=0){
+    const delay=Math.max(0,(time-metroAudio.currentTime)*1000);
+    setTimeout(()=>{if(metroRunning&&metroSound==='voice'&&beatModeFor(beat)!=='silent')speakBeat(beat,isAccent)},delay);
+  }
+}
+function chooseSound(s){
+  metroSound=s;
+  document.querySelectorAll('.sound-chip').forEach(b=>b.classList.toggle('active',b.dataset.sound===s));
+  if(s==='voice' && 'speechSynthesis' in window){
+    loadSpeechVoices();
+    if(metroRunning){
+      const beat=metroVisualBeat>=0?metroVisualBeat:0;
+      window.speechSynthesis.cancel();
+      setTimeout(()=>{if(metroRunning&&metroSound==='voice'&&beatModeFor(beat)!=='silent')speakBeat(beat,beatModeFor(beat)==='accent')},30);
+    }
+  } else if('speechSynthesis' in window){window.speechSynthesis.cancel();}
+}
+function metroStepDuration(){const sp=stepsPerBeat();const base=60/metroBpm;return base/sp}
+function shouldHit(step){
+ const pattern=effectivePattern();if(!pattern)return true;
+ const sp=Math.max(1,Math.min(16,Math.round(stepsPerBeat())));return pattern.includes(step%4) || (sp<4 && pattern.some(x=>Math.round(x/(4/sp))===step));
+}
+function scheduleMetroNote(step,time){
+ const sp=Math.max(1,Math.round(stepsPerBeat()));const beat=Math.floor(step/sp);const sub=step%sp;const mode=beatModeFor(beat);const isAccent=mode==='accent'&&sub===0;
+ const silent=metroMute&&Math.random()<.18;
+ if(mode!=='silent' && shouldHit(step)&&!silent && (metroSound!=='voice' || sub===0))clickSound(time,isAccent,beat);
+ metroVisualQueue.push({time,beat,sub});
+}
+function scheduler(){while(metroNextTime<metroAudio.currentTime+metroScheduleAhead){applyTempoReservationsAtMeasure();const mainBeats=displayBeatCount();const totalSteps=mainBeats*Math.max(1,Math.round(stepsPerBeat()));scheduleMetroNote(metroStep,metroNextTime);metroStep++;if(metroStep>=totalSteps){metroStep=0;metroMeasure++}metroNextTime+=metroStepDuration()}}
+function metroVisualTick(){
+  if(metroRunning && metroAudio){
+    const now=metroAudio.currentTime;
+    while(metroVisualQueue.length && metroVisualQueue[0].time <= now){
+      const ev=metroVisualQueue.shift();
+      updateBeatDisplay(ev.beat,ev.sub);
+    }
+  }
+  requestAnimationFrame(metroVisualTick);
+}
+requestAnimationFrame(metroVisualTick);
+function toggleMetronome(){if(metroRunning)pauseMetronome();else startMetronome()}
+async function startMetronome(){ensureMetroAudio();if(metroAudio.state==='suspended')await metroAudio.resume();metroBaseBpm=metroBpm;resetTempoReservations();metroRunning=true;metroVisualQueue=[];metroStep=0;metroMeasure=0;metroNextTime=metroAudio.currentTime+.06;clearInterval(metroTimer);metroTimer=setInterval(scheduler,metroLookahead);$('metroStart').classList.add('running');$('metroStart').textContent='';$('metroStatus').textContent=metroBpm+' BPM · '+metroMeterNum+'/'+metroMeterDen+' · 재생 중';if(metroWake&&'wakeLock' in navigator){try{metroWakeLock=await navigator.wakeLock.request('screen')}catch(e){}}}
+function pauseMetronome(){metroRunning=false;metroVisualQueue=[];clearInterval(metroTimer);metroTimer=null;if('speechSynthesis' in window)window.speechSynthesis.cancel();$('metroStart').classList.remove('running');$('metroStart').textContent='▶';$('metroStatus').textContent='일시정지';releaseWakeLock()}
+function stopMetronome(){metroRunning=false;metroVisualQueue=[];clearInterval(metroTimer);metroTimer=null;if('speechSynthesis' in window)window.speechSynthesis.cancel();metroStep=0;metroMeasure=0;setBpm(metroBaseBpm);resetTempoReservations();$('metroStart').classList.remove('running');$('metroStart').textContent='▶';$('metroStatus').textContent='준비됨';updateBeatDisplay();releaseWakeLock()}
+async function releaseWakeLock(){if(metroWakeLock){try{await metroWakeLock.release()}catch(e){}metroWakeLock=null}}
+async function toggleMetroFullscreen(){const card=$('metroCard');const active=card.classList.toggle('metro-fullscreen-mode');document.body.classList.toggle('metro-is-fullscreen',active);try{if(active&&screen.orientation?.lock)await screen.orientation.lock('landscape');if(!active&&screen.orientation?.unlock)screen.orientation.unlock()}catch(e){}}
+function tapTempo(){const now=performance.now();metroTapTimes=metroTapTimes.filter(t=>now-t<2000);metroTapTimes.push(now);if(metroTapTimes.length>=2){let ints=[];for(let i=1;i<metroTapTimes.length;i++)ints.push(metroTapTimes[i]-metroTapTimes[i-1]);setBpm(Math.round(60000/(ints.reduce((a,b)=>a+b,0)/ints.length)))}if(metroTapTimes.length>6)metroTapTimes=metroTapTimes.slice(-4)}
+setMetroMode('basic');setBpm(85);renderTempoReservations();updateBeatDisplay();
+let sec=0,running=false,timer=null,phase="연습",phaseSec=0;
+function fmt(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+function toggle(){running=!running;$("start").textContent=running?"일시정지":"시작";if(running)timer=setInterval(tick,1000);else clearInterval(timer)}
+function tick(){sec++;if($("timerMode").value==="interval"){phaseSec++;if(phase==="연습"&&phaseSec>=600){phase="휴식";phaseSec=0;show("휴식 시간입니다.")}else if(phase==="휴식"&&phaseSec>=120){phase="연습";phaseSec=0;show("다시 연습하세요.")}$("mode").textContent=phase} $("clock").textContent=fmt(sec)}
+function resetTimer(){running=false;clearInterval(timer);sec=0;phase="연습";phaseSec=0;$("clock").textContent="00:00";$("mode").textContent="자유 연습";$("start").textContent="시작"}
+function timerChanged(){resetTimer();$("mode").textContent=$("timerMode").value==="interval"?"연습":"자유 연습"}
+$("nav").addEventListener("click",e=>{let b=e.target.closest("button");if(!b)return;document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));$(b.dataset.page).classList.add("active")});
+if("serviceWorker" in navigator && location.protocol!=="file:"){navigator.serviceWorker.register("sw.js").catch(()=>{})}
+render();
+</script>
+</body>
+</html>
